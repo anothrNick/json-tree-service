@@ -1,15 +1,17 @@
 version: '3'
 services:
-  mydb:
+  database:
     image: postgres:12
+    container_name: postgres
     volumes:
-    - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
+      - ./initsql/create.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-    - 5432:5432
+      - 5432:5432
     environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_USER: userOne
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=testuser
+      - POSTGRES_DB=testdb
  
 volumes:
   db-data:
-    driver: local

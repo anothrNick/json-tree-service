@@ -4,36 +4,10 @@ Docker postgres instance to play with JSONB field.
 
 ```sh
 # start services
-$ docker-compose up -d
+$ make up
 
-# login to container and create table
-$ docker exec -it json-tree-service_mydb_1 /bin/sh
-# psql -U postgres
-psql (12beta2 (Debian 12~beta2-1.pgdg100+1))
-Type "help" for help.
-
-postgres=# CREATE DATABASE testdb;
-CREATE DATABASE
-postgres=# exit
-# exit
-
-# login from local machine
-$ psql -h localhost -p 5432 -U postgres -W
-Password for user postgres: 
-psql (9.5.2, server 12beta2 (Debian 12~beta2-1.pgdg100+1))
-Type "help" for help.
-
-postgres=# \l
-                          List of databases
-   Name    |  Owner   | Encoding |         Access privileges          
------------+----------+----------+------------------------------------
- postgres  | postgres | UTF8     | 
- template0 | postgres | UTF8     | =c/postgres\npostgres=CTc/postgres
- template1 | postgres | UTF8     | =c/postgres\npostgres=CTc/postgres
- testdb    | postgres | UTF8     | 
-(4 rows)
-
-postgres=# \c testdb
+# login with psql
+$ psql -h localhost -p 5432 -U testuser -W -d testdb
 ```
 
 ### Database Schema
