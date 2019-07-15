@@ -6,7 +6,7 @@ JSON Tree rest service. Access JSON structure with HTTP path parameters as keys/
 # start postgres service
 $ make up
 
-# start go web service
+# start go web service, TODO: run in docker
 $ go run backend/main.go
 
 # make HTTP requests
