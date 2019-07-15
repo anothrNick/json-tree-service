@@ -3,8 +3,11 @@ JSON Tree rest service. Access JSON structure with HTTP path parameters as keys/
 ### Run Locally
 
 ```sh
-# start services
+# start postgres service
 $ make up
+
+# start go web service
+$ go run backend/main.go
 
 # make HTTP requests
 $ curl -s -X POST -d '{"age": 25, "job": {"title": "clerk"}, "name": "bob", "friends": ["one", "two"]}' localhost:5000/mydb | jq "."
