@@ -27,7 +27,8 @@ func (h *Handlers) CreateProject(c *gin.Context) {
 
 	err := h.db.CreateProject(project, b)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{})
@@ -39,7 +40,8 @@ func (h *Handlers) ReadProject(c *gin.Context) {
 
 	byt, err := h.db.GetProjectKey(project)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		return
 	}
 
 	var obj interface{}
@@ -49,7 +51,15 @@ func (h *Handlers) ReadProject(c *gin.Context) {
 
 // DeleteProject deletes the entire project
 func (h *Handlers) DeleteProject(c *gin.Context) {
-	c.JSON(http.StatusNotImplemented, gin.H{})
+	project := c.Param("project")
+
+	err := h.db.DeleteProject(project)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		return
+	}
+
+	c.JSON(http.StatusNoContent, gin.H{})
 }
 
 // ReadProjectKey retrieves the data stored at the key path provided by the HTTP path parameters
@@ -60,7 +70,8 @@ func (h *Handlers) ReadProjectKey(c *gin.Context) {
 	keys = strings.TrimRight(strings.TrimLeft(keys, "/"), "/")
 	byt, err := h.db.GetProjectKey(project, strings.Split(keys, "/")...)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		return
 	}
 
 	var obj interface{}
@@ -70,15 +81,47 @@ func (h *Handlers) ReadProjectKey(c *gin.Context) {
 
 // CreateProjectKey updates a project key at the key path. An error is returned if the key already exists.
 func (h *Handlers) CreateProjectKey(c *gin.Context) {
-	c.JSON(http.StatusNotImplemented, gin.H{})
+	project := c.Param("project")
+	keys := c.Param("keys")
+	b, _ := c.GetRawData()
+
+	keys = strings.TrimRight(strings.TrimLeft(keys, "/"), "/")
+	err := h.db.CreateProjectKey(project, b, strings.Split(keys, "/")...)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{})
 }
 
 // UpdateProjectKey updates a project key at the key path. The key is created if it does not already exist.
 func (h *Handlers) UpdateProjectKey(c *gin.Context) {
-	c.JSON(http.StatusNotImplemented, gin.H{})
+	project := c.Param("project")
+	keys := c.Param("keys")
+	b, _ := c.GetRawData()
+
+	keys = strings.TrimRight(strings.TrimLeft(keys, "/"), "/")
+	err := h.db.UpdateProjectKey(project, b, strings.Split(keys, "/")...)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{})
 }
 
 // DeleteProjectKey deletes a project key at the key path
 func (h *Handlers) DeleteProjectKey(c *gin.Context) {
-	c.JSON(http.StatusNotImplemented, gin.H{})
+	project := c.Param("project")
+	keys := c.Param("keys")
+
+	keys = strings.TrimRight(strings.TrimLeft(keys, "/"), "/")
+	err := h.db.DeleteProjectKey(project, strings.Split(keys, "/")...)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{})
 }

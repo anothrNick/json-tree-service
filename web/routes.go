@@ -26,14 +26,14 @@ func SetRoutes(engine *gin.Engine, h Handler) error {
 
 	//handlers := NewHandlers(datastore)
 
-	engine.POST("/:project", h.CreateProject)  // create a new tree at `project`
-	engine.GET("/:project", h.ReadProject)     // returns entire root tree
-	engine.DELETE("/:project", notImplemented) // project tree must be empty to delete
+	engine.POST("/:project", h.CreateProject)   // create a new tree at `project`
+	engine.GET("/:project", h.ReadProject)      // returns entire root tree
+	engine.DELETE("/:project", h.DeleteProject) // project tree must be empty to delete
 
 	engine.GET("/:project/*keys", h.ReadProjectKey)
-	engine.POST("/:project/*keys", notImplemented)
-	engine.PUT("/:project/*keys", notImplemented)
-	engine.DELETE("/:project/*keys", notImplemented)
+	engine.POST("/:project/*keys", h.CreateProjectKey)
+	engine.PUT("/:project/*keys", h.UpdateProjectKey)
+	engine.DELETE("/:project/*keys", h.DeleteProjectKey)
 
 	return nil
 }
