@@ -1,7 +1,3 @@
-install:
-	docker run --rm -it -v $(shell pwd):/go/src/github.com/anothrnick/json-tree-service -w /go/src/github.com/anothrnick/json-tree-service \
-    instrumentisto/glide install
-
 rebuild: install
 	docker-compose build --no-cache
 
@@ -22,3 +18,4 @@ remove:
 
 clean:
 	docker-compose down --rmi all -v --remove-orphans
+	rm json-tree-service

@@ -1,4 +1,0 @@
-package: github.com/anothrnick/machinable
-import:
-  - package: github.com/gin-gonic/gin
-  - package: github.com/lib/pq

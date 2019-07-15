@@ -33,6 +33,25 @@ func (h *Handlers) CreateProject(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{})
 }
 
+// ReadProject retrieves the project root JSON tree
+func (h *Handlers) ReadProject(c *gin.Context) {
+	project := c.Param("project")
+
+	byt, err := h.db.GetProjectKey(project)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+	}
+
+	var obj interface{}
+	json.Unmarshal(byt, &obj)
+	c.IndentedJSON(http.StatusOK, obj)
+}
+
+// DeleteProject deletes the entire project
+func (h *Handlers) DeleteProject(c *gin.Context) {
+	c.JSON(http.StatusNotImplemented, gin.H{})
+}
+
 // ReadProjectKey retrieves the data stored at the key path provided by the HTTP path parameters
 func (h *Handlers) ReadProjectKey(c *gin.Context) {
 	project := c.Param("project")
@@ -47,4 +66,19 @@ func (h *Handlers) ReadProjectKey(c *gin.Context) {
 	var obj interface{}
 	json.Unmarshal(byt, &obj)
 	c.IndentedJSON(http.StatusOK, obj)
+}
+
+// CreateProjectKey updates a project key at the key path. An error is returned if the key already exists.
+func (h *Handlers) CreateProjectKey(c *gin.Context) {
+	c.JSON(http.StatusNotImplemented, gin.H{})
+}
+
+// UpdateProjectKey updates a project key at the key path. The key is created if it does not already exist.
+func (h *Handlers) UpdateProjectKey(c *gin.Context) {
+	c.JSON(http.StatusNotImplemented, gin.H{})
+}
+
+// DeleteProjectKey deletes a project key at the key path
+func (h *Handlers) DeleteProjectKey(c *gin.Context) {
+	c.JSON(http.StatusNotImplemented, gin.H{})
 }
