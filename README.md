@@ -6,6 +6,12 @@ JSON Tree rest service. Access JSON structure with HTTP path parameters as keys/
 # start postgres service
 $ make up
 
+# set env vars, can be changed in docker-compose
+export DB_USER=testuser
+export DB_PW=1234
+export DB_HOST=localhost
+export DB_DB=testdb
+
 # start go web service, TODO: run in docker
 $ go run main.go
 ```
@@ -98,3 +104,7 @@ $ curl -s localhost:5000/mydb/ | jq "."
   "name": "bob"
 }
 ```
+
+### License
+
+MIT Copyright (c) 2019 Nick Sjostrom

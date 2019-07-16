@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/anothrNick/json-tree-service/database"
 	"github.com/anothrNick/json-tree-service/web"
@@ -11,7 +12,13 @@ import (
 
 func main() {
 	// connect to db
-	db, err := database.NewPostgres("testuser", "1234", "localhost", "testdb")
+	db, err := database.NewPostgres(
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PW"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_DB"),
+	)
+
 	if err != nil {
 		log.Fatal(err)
 	}
