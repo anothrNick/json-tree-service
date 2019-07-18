@@ -7,11 +7,26 @@ services:
       - db-data:/var/lib/postgresql/data
       - ./sql/create.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - 5432:5432
+      - '127.0.0.1:5432:5432'
     environment:
       - POSTGRES_PASSWORD=1234
       - POSTGRES_USER=testuser
       - POSTGRES_DB=testdb
  
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - 'database'
+    ports:
+      - '127.0.0.1:5001:5001'
+    environment:
+      - JSONDB_USER=testuser
+      - JSONDB_PW=1234
+      - JSONDB_HOST=database
+      - JSONDB_DB=testdb
+
 volumes:
   db-data:

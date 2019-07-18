@@ -13,10 +13,10 @@ import (
 func main() {
 	// connect to db
 	db, err := database.NewPostgres(
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PW"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_DB"),
+		os.Getenv("JSONDB_USER"),
+		os.Getenv("JSONDB_PW"),
+		os.Getenv("JSONDB_HOST"),
+		os.Getenv("JSONDB_DB"),
 	)
 
 	if err != nil {
@@ -31,5 +31,5 @@ func main() {
 	web.SetRoutes(router, handler)
 
 	// run server
-	router.Run(":5000")
+	router.Run(":5001")
 }
