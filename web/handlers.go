@@ -27,7 +27,8 @@ func (h *Handlers) CreateProject(c *gin.Context) {
 
 	err := h.db.CreateProject(project, b)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		tErr := h.db.TranslateError(err)
+		c.JSON(tErr.Code, tErr.Error())
 		return
 	}
 
@@ -40,7 +41,8 @@ func (h *Handlers) ReadProject(c *gin.Context) {
 
 	byt, err := h.db.GetProjectKey(project)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		tErr := h.db.TranslateError(err)
+		c.JSON(tErr.Code, tErr.Error())
 		return
 	}
 
@@ -55,7 +57,8 @@ func (h *Handlers) DeleteProject(c *gin.Context) {
 
 	err := h.db.DeleteProject(project)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		tErr := h.db.TranslateError(err)
+		c.JSON(tErr.Code, tErr.Error())
 		return
 	}
 
@@ -70,7 +73,8 @@ func (h *Handlers) ReadProjectKey(c *gin.Context) {
 	keys = strings.TrimRight(strings.TrimLeft(keys, "/"), "/")
 	byt, err := h.db.GetProjectKey(project, strings.Split(keys, "/")...)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		tErr := h.db.TranslateError(err)
+		c.JSON(tErr.Code, tErr.Error())
 		return
 	}
 
@@ -83,12 +87,19 @@ func (h *Handlers) ReadProjectKey(c *gin.Context) {
 func (h *Handlers) CreateProjectKey(c *gin.Context) {
 	project := c.Param("project")
 	keys := c.Param("keys")
+
 	b, _ := c.GetRawData()
 
 	keys = strings.TrimRight(strings.TrimLeft(keys, "/"), "/")
+	if keys == "" {
+		c.JSON(http.StatusBadRequest, "no keys provided")
+		return
+	}
+
 	err := h.db.CreateProjectKey(project, b, strings.Split(keys, "/")...)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		tErr := h.db.TranslateError(err)
+		c.JSON(tErr.Code, tErr.Error())
 		return
 	}
 
@@ -99,12 +110,19 @@ func (h *Handlers) CreateProjectKey(c *gin.Context) {
 func (h *Handlers) UpdateProjectKey(c *gin.Context) {
 	project := c.Param("project")
 	keys := c.Param("keys")
+
 	b, _ := c.GetRawData()
 
 	keys = strings.TrimRight(strings.TrimLeft(keys, "/"), "/")
+	if keys == "" {
+		c.JSON(http.StatusBadRequest, "no keys provided")
+		return
+	}
+
 	err := h.db.UpdateProjectKey(project, b, strings.Split(keys, "/")...)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		tErr := h.db.TranslateError(err)
+		c.JSON(tErr.Code, tErr.Error())
 		return
 	}
 
@@ -115,11 +133,16 @@ func (h *Handlers) UpdateProjectKey(c *gin.Context) {
 func (h *Handlers) DeleteProjectKey(c *gin.Context) {
 	project := c.Param("project")
 	keys := c.Param("keys")
-
 	keys = strings.TrimRight(strings.TrimLeft(keys, "/"), "/")
+	if keys == "" {
+		c.JSON(http.StatusBadRequest, "no keys provided")
+		return
+	}
+
 	err := h.db.DeleteProjectKey(project, strings.Split(keys, "/")...)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, h.db.TranslateError(err).Error())
+		tErr := h.db.TranslateError(err)
+		c.JSON(tErr.Code, tErr.Error())
 		return
 	}
 

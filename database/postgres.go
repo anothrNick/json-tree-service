@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/lib/pq"
@@ -28,16 +29,35 @@ func NewPostgres(user, password, host, database string) (*Postgres, error) {
 }
 
 // TranslateError translates the database specific error to a simple `error` to return to the user.
-func (p *Postgres) TranslateError(err error) error {
-	fmt.Println(err)
+func (p *Postgres) TranslateError(err error) *TranslatedError {
+	originalError := err.Error()
+
 	if err, ok := err.(*pq.Error); ok {
+		// postgres specific errors
 		switch err.Code {
+		case "23505":
+			return NewTranslatedError(http.StatusBadRequest, errors.New("key already exists"))
+		case "22023":
+			return NewTranslatedError(http.StatusBadRequest, errors.New("key already exists"))
 		default:
-			return errors.New(strings.TrimPrefix(err.Error(), "pq: "))
+			fmt.Println(err)
+			fmt.Println(err.Code)
+			return NewTranslatedError(http.StatusInternalServerError, errors.New(strings.TrimPrefix(err.Error(), "pq: ")))
+		}
+	} else {
+		// generic sql package errors
+		switch originalError {
+		case sql.ErrConnDone.Error():
+			return NewTranslatedError(http.StatusInternalServerError, errors.New("internal server error"))
+		case sql.ErrNoRows.Error():
+			return NewTranslatedError(http.StatusNotFound, errors.New("not found"))
+		case sql.ErrTxDone.Error():
+			return NewTranslatedError(http.StatusInternalServerError, errors.New("internal server error"))
 		}
 	}
 
-	return errors.New("unknown error")
+	fmt.Println(err)
+	return NewTranslatedError(http.StatusInternalServerError, errors.New("internal server error"))
 }
 
 // CreateProject creates a new project with a JSON tree
