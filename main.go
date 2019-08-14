@@ -6,6 +6,7 @@ import (
 
 	"github.com/anothrNick/json-tree-service/database"
 	"github.com/anothrNick/json-tree-service/web"
+	"github.com/anothrNick/json-tree-service/websockets"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -23,8 +24,19 @@ func main() {
 		log.Fatal(err)
 	}
 
+	dispatcher := websockets.NewDispatcher()
+	go dispatcher.Run()
+	// testing
+	// ticker := time.NewTicker(1000 * time.Millisecond)
+	// go func() {
+	// 	for t := range ticker.C {
+	// 		v := struct{ Time string }{Time: t.Format(time.RFC3339)}
+	// 		dispatcher.Broadcast <- v
+	// 	}
+	// }()
+
 	// create handlers
-	handler := web.NewHandlers(db)
+	handler := web.NewHandlers(db, dispatcher)
 
 	// create router, set routes
 	router := gin.Default()

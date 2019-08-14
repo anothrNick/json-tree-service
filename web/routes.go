@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var messages = make(chan string)
+
 func notImplemented(c *gin.Context) {
 	c.JSON(http.StatusNotImplemented, gin.H{})
 }
@@ -19,19 +21,25 @@ type Handler interface {
 	CreateProjectKey(c *gin.Context)
 	UpdateProjectKey(c *gin.Context)
 	DeleteProjectKey(c *gin.Context)
+	WebsockerHandler(c *gin.Context)
 }
 
 // SetRoutes sets all of the appropriate routes to handlers for the application
 func SetRoutes(engine *gin.Engine, h Handler) error {
+	api := engine.Group("/api")
 
-	engine.GET("/:project", h.ReadProject)      // returns entire root tree
-	engine.POST("/:project", h.CreateProject)   // create a new tree at `project`
-	engine.DELETE("/:project", h.DeleteProject) // project tree must be empty to delete
+	api.GET("/:project", h.ReadProject)      // returns entire root tree
+	api.POST("/:project", h.CreateProject)   // create a new tree at `project`
+	api.DELETE("/:project", h.DeleteProject) // project tree must be empty to delete
 
-	engine.GET("/:project/*keys", h.ReadProjectKey)
-	engine.POST("/:project/*keys", h.CreateProjectKey)
-	engine.PUT("/:project/*keys", h.UpdateProjectKey)
-	engine.DELETE("/:project/*keys", h.DeleteProjectKey)
+	api.GET("/:project/*keys", h.ReadProjectKey)
+	api.POST("/:project/*keys", h.CreateProjectKey)
+	api.PUT("/:project/*keys", h.UpdateProjectKey)
+	api.DELETE("/:project/*keys", h.DeleteProjectKey)
+
+	ws := engine.Group("/ws")
+
+	ws.GET("/:project", h.WebsockerHandler)
 
 	return nil
 }
