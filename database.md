@@ -133,4 +133,30 @@ SELECT project, data#>'{}' as data FROM trees WHERE project='mydb';
  mydb    | {"age": 25, "job": {"title": "clerk"}, "name": "bob", "friends": []}
 (1 row)
 
+-- List (and potentially paginate) an array of Items (must be a list)
+SELECT value FROM trees, jsonb_array_elements(data#>'{friends}') WHERE project='mydb';
+  value   
+----------
+ "Mark"
+ "Scott"
+ "Mark"
+ "Matt"
+ "Jim"
+ "Jim"
+ "Paul"
+ "Austin"
+
+-- 
+(8 rows)
+
+-- Expand object into list of key/value pairs (and potentially paginate)
+SELECT key, value FROM trees, jsonb_each(data#>'{job}') WHERE project='mydb';
+     key      |               value                
+--------------+------------------------------------
+ title        | "QA"
+ years        | 10
+ description  | "Test stuff before it is deployed"
+ satisfaction | "good"
+(4 rows)
+
 ```

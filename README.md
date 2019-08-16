@@ -96,6 +96,12 @@ $ curl -s localhost:5001/api/mydb/ | jq "."
 }
 ```
 
+### Websocket UI updates prototype
+
+[http://jsfiddle.net/anothernick/hcax2gvk/](http://jsfiddle.net/anothernick/hcax2gvk/)
+
+A JSFiddle prototype which initially displays the JSON Object returned from an HTTP request. The Object is then updated and re-rendered when updates are made to the object (listens on a websocket).
+
 ### Credit
 
 * Websocket work basically taken from [gorilla/websocket/chat example](https://github.com/gorilla/websocket/blob/master/examples/chat)
