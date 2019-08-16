@@ -3,7 +3,6 @@ package websockets
 import (
 	"encoding/json"
 	"log"
-	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -23,19 +22,13 @@ const (
 	maxMessageSize = 512
 )
 
-// Upgrader upgrades the request to WS
-var Upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin:     func(r *http.Request) bool { return true },
-}
-
 // NewClient creates and returns a pointer to a new client
-func NewClient(dispatcher *Dispatcher, conn *websocket.Conn) *Client {
+func NewClient(dispatcher *Dispatcher, conn *websocket.Conn, channel string) *Client {
 	return &Client{
 		dispatcher: dispatcher,
 		conn:       conn,
 		send:       make(chan interface{}, 256),
+		channel:    channel,
 	}
 }
 
@@ -48,6 +41,9 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	send chan interface{}
+
+	// The channel the client is subscribed to.
+	channel string
 }
 
 // Dispatcher returns the `Dispatcher` struct
@@ -55,7 +51,7 @@ func (c *Client) Dispatcher() *Dispatcher {
 	return c.dispatcher
 }
 
-// ReadDispatch pumps messages from the websocket connection to the hub.
+// ReadDispatch pumps messages from the websocket connection to the dispatcher.
 //
 // The application runs ReadDispatch in a per-connection goroutine. The application
 // ensures that there is at most one reader on a connection by executing all

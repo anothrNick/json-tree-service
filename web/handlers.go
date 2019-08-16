@@ -2,28 +2,48 @@ package web
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
 
+	"github.com/anothrNick/json-tree-service/database"
 	"github.com/anothrNick/json-tree-service/websockets"
 	"github.com/gin-gonic/gin"
 )
 
+// Database is the required interface to the DB layer from the HTTP handlers
+type Database interface {
+	TranslateError(err error) *database.TranslatedError
+
+	CreateProject(projectName string, data []byte) error
+	DeleteProject(projectName string) error
+
+	GetProjectKey(projectName string, keys ...string) ([]byte, error)
+	CreateProjectKey(projectName string, data []byte, keys ...string) error
+	UpdateProjectKey(projectName string, data []byte, keys ...string) error
+	DeleteProjectKey(projectName string, keys ...string) error
+}
+
+// Dispatcher provides an interface to dispatch events to clients connect over websockets
+type Dispatcher interface {
+	Broadcast() chan *websockets.Message
+}
+
+// Action is the payload dispatched to any clients connected over websocket
 type Action struct {
-	Type string      `json:"type"`
-	Path string      `json:"path"`
-	Data interface{} `json:"data"`
+	Type    string      `json:"type"`
+	Project string      `json:"project"`
+	Path    string      `json:"path"`
+	Data    interface{} `json:"data"`
 }
 
 // Handlers contains all handler functions
 type Handlers struct {
 	db         Database
-	dispatcher *websockets.Dispatcher
+	dispatcher Dispatcher
 }
 
 // NewHandlers creates and returns a new instance of `Handlers` with the datastore
-func NewHandlers(datastore Database, dispatcher *websockets.Dispatcher) *Handlers {
+func NewHandlers(datastore Database, dispatcher Dispatcher) *Handlers {
 	return &Handlers{
 		db:         datastore,
 		dispatcher: dispatcher,
@@ -113,6 +133,9 @@ func (h *Handlers) CreateProjectKey(c *gin.Context) {
 		return
 	}
 
+	// dispatch action
+	h.broadcast("POST", keys, project, b)
+
 	c.JSON(http.StatusCreated, gin.H{})
 }
 
@@ -137,14 +160,7 @@ func (h *Handlers) UpdateProjectKey(c *gin.Context) {
 	}
 
 	// dispatch action
-	var rawData interface{}
-	json.Unmarshal(b, &rawData)
-	action := Action{
-		Type: "update",
-		Path: keys,
-		Data: rawData,
-	}
-	h.dispatcher.Broadcast <- action
+	h.broadcast("PUT", keys, project, b)
 
 	c.JSON(http.StatusCreated, gin.H{})
 }
@@ -166,26 +182,21 @@ func (h *Handlers) DeleteProjectKey(c *gin.Context) {
 		return
 	}
 
+	// dispatch action
+	h.broadcast("DELETE", keys, project, nil)
+
 	c.JSON(http.StatusCreated, gin.H{})
 }
 
-// WebsockerHandler handles all of the websocket connections
-func (h *Handlers) WebsockerHandler(c *gin.Context) {
-	serveWs(h.dispatcher, c.Writer, c.Request)
-}
-
-// serveWs handles websocket requests from the peer.
-func serveWs(dispatcher *websockets.Dispatcher, w http.ResponseWriter, r *http.Request) {
-	conn, err := websockets.Upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Printf("error: %v", err)
-		return
+func (h *Handlers) broadcast(typ, path, project string, b []byte) {
+	// dispatch action
+	var rawData interface{}
+	json.Unmarshal(b, &rawData)
+	action := Action{
+		Type:    typ,
+		Path:    path,
+		Project: project,
+		Data:    rawData,
 	}
-	client := websockets.NewClient(dispatcher, conn)
-	client.Dispatcher().Register() <- client
-
-	// Allow collection of memory referenced by the caller by doing all work in
-	// new goroutines.
-	go client.WriteDispatch()
-	go client.ReadDispatch()
+	h.dispatcher.Broadcast() <- &websockets.Message{Channel: project, Data: action}
 }

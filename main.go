@@ -24,23 +24,20 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// create a new message dispatcher for websocket connections
 	dispatcher := websockets.NewDispatcher()
 	go dispatcher.Run()
-	// testing
-	// ticker := time.NewTicker(1000 * time.Millisecond)
-	// go func() {
-	// 	for t := range ticker.C {
-	// 		v := struct{ Time string }{Time: t.Format(time.RFC3339)}
-	// 		dispatcher.Broadcast <- v
-	// 	}
-	// }()
 
-	// create handlers
-	handler := web.NewHandlers(db, dispatcher)
+	// create HTTP handlers
+	httpHandler := web.NewHandlers(db, dispatcher)
+
+	// create websocket handlers
+	wsHandler := websockets.NewHandlers(dispatcher)
 
 	// create router, set routes
 	router := gin.Default()
-	web.SetRoutes(router, handler)
+	web.SetRoutes(router, httpHandler)
+	websockets.SetRoutes(router, wsHandler)
 
 	// run server
 	router.Run(":5001")
