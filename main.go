@@ -7,6 +7,7 @@ import (
 	"github.com/anothrNick/json-tree-service/database"
 	"github.com/anothrNick/json-tree-service/web"
 	"github.com/anothrNick/json-tree-service/websockets"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -36,7 +37,14 @@ func main() {
 
 	// create router, set routes
 	router := gin.Default()
+
+	// serve frontend static files
+	router.Use(static.Serve("/", static.LocalFile("./ui/build", true)))
+
+	// serve HTTP routes
 	web.SetRoutes(router, httpHandler)
+
+	// serve Websocket routes
 	websockets.SetRoutes(router, wsHandler)
 
 	// run server

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <style>
+            body {
+                font-family: sans-serif; 
+                padding: 10px;    
+            }
+            h1 {
+                font-weight: bold;
+                margin-bottom: 8px;            
+            }
+            label {
+                font-size: small;   
+            }
+            #controls {
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+                border-bottom: 1px solid #000;    
+            }
+            pre {
+            padding: 10px;
+            background-color: #EFEFEF;
+            border-radius: 3px;
+            border: 1px solid #DDD;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h1>WebSocket API Example</h1>
+        <div id="info">
+            <p>
+                <strong>Status: </strong><span id="connectionstatus">Disconnected</span>
+            </p>
+        </div>
+        <br />
+        <button type="button" id="connect" onclick="closeConnection();">Disconnect from the WebSocket Server</button>
+        <br/><br/>
+        <pre id="code">test</pre>
+
+        <script>
+            //Set the websocket server URL
+            var websocketurl = "ws://localhost:5001/ws/mydb";
+            var httpurl = "http://localhost:5001/api/mydb";
+            var allData = undefined;
+
+            //get status element
+            var connstatus = document.getElementById("connectionstatus");
+
+            //get info div element
+            var infodiv = document.getElementById("info");
+
+            //Create the WebSocket object (web socket echo test service provided by websocket.org)
+            socket = new WebSocket(websocketurl);
+
+            //This function is called when the websocket connection is opened
+            socket.onopen = function() {
+            connstatus.innerHTML = "Connected!";
+            infodiv.innerHTML += "<p>Connected to websocket server at: " + websocketurl + "</p>";
+            };
+
+            //This function is called when the websocket connection is closed
+            socket.onclose = function() {
+            connstatus.innerHTML = "Disconnected";
+            infodiv.innerHTML += "<p>Disconnected from the websocket server at: " + websocketurl + "</p>";
+            };
+
+            //This function is called when the websocket receives a message. It is passed the message object as its only parameter
+            socket.onmessage = function(message) {
+                var newData = JSON.parse(message.data);
+            var namespaces = newData.path.split("/");
+            console.log(namespaces);
+            console.log(newData);
+            //infodiv.innerHTML += "<p>Message received from server: '" + message.data + "'</p>";
+            
+            if (newData.type === "PUT" || newData.type === "POST") {
+                setValue(allData, namespaces, newData.data);
+                document.getElementById("code").innerHTML = JSON.stringify(allData, undefined, 4);
+            }
+            };
+
+            function closeConnection() {
+                //check to ensure that the socket variable is present i.e. the browser support tests passed
+                if (socket) {
+                    socket.close();
+                }
+            }
+
+            // setValue updates the appropriate value in the json tree based on the websocket data
+            function setValue(obj, ls, val) {
+                if (ls.length === 0) {
+                    return val;
+                }
+                var k = ls.shift();
+                obj[k] = setValue(obj[k], ls, val);
+                return obj;
+            }
+
+            function reqListener () {
+            allData = JSON.parse(this.responseText);
+                document.getElementById("code").innerHTML = JSON.stringify(allData, undefined, 4);
+            console.log(this.responseText);
+            }
+
+            var oReq = new XMLHttpRequest();
+            oReq.addEventListener("load", reqListener);
+            oReq.open("GET", httpurl);
+            oReq.send();
+        </script>
+    </body>
+</html>

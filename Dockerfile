@@ -28,6 +28,7 @@ RUN apk add --no-cache ca-certificates
 
 ENV GIN_MODE=release
 
+COPY ./ui/build /ui/build
 COPY --from=builder /go/src/github.com/anothrnick/json-tree-service/api /bin/api
 
 ENTRYPOINT ["/bin/api"]
