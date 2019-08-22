@@ -66,27 +66,27 @@
             //This function is called when the websocket connection is opened
             socket.onopen = function() {
             connstatus.innerHTML = "Connected!";
-            infodiv.innerHTML += "<p>Connected to websocket server at: " + websocketurl + "</p>";
+                infodiv.innerHTML += "<p>Connected to websocket server at: " + websocketurl + "</p>";
             };
 
             //This function is called when the websocket connection is closed
             socket.onclose = function() {
             connstatus.innerHTML = "Disconnected";
-            infodiv.innerHTML += "<p>Disconnected from the websocket server at: " + websocketurl + "</p>";
+                infodiv.innerHTML += "<p>Disconnected from the websocket server at: " + websocketurl + "</p>";
             };
 
             //This function is called when the websocket receives a message. It is passed the message object as its only parameter
             socket.onmessage = function(message) {
                 var newData = JSON.parse(message.data);
-            var namespaces = newData.path.split("/");
-            console.log(namespaces);
-            console.log(newData);
-            //infodiv.innerHTML += "<p>Message received from server: '" + message.data + "'</p>";
-            
-            if (newData.type === "PUT" || newData.type === "POST") {
-                setValue(allData, namespaces, newData.data);
-                document.getElementById("code").innerHTML = JSON.stringify(allData, undefined, 4);
-            }
+                var namespaces = newData.path.split("/");
+                console.log(namespaces);
+                console.log(newData);
+                //infodiv.innerHTML += "<p>Message received from server: '" + message.data + "'</p>";
+                
+                if (newData.type === "PUT" || newData.type === "POST") {
+                    setValue(allData, namespaces, newData.data);
+                    document.getElementById("code").innerHTML = JSON.stringify(allData, undefined, 4);
+                }
             };
 
             function closeConnection() {
@@ -109,7 +109,7 @@
             function reqListener () {
             allData = JSON.parse(this.responseText);
                 document.getElementById("code").innerHTML = JSON.stringify(allData, undefined, 4);
-            console.log(this.responseText);
+                console.log(this.responseText);
             }
 
             var oReq = new XMLHttpRequest();

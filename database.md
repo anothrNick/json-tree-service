@@ -62,7 +62,11 @@ SELECT project, data#>'{age}' FROM trees WHERE project='people';
 
 -- update key with jsonb_set, default creates if json path does not exist in {<json field/index path>}
 -- update job title key
-UPDATE trees set data=jsonb_set(data, '{job, title}', '"engineer"') where project='people';UPDATE 1SELECT project, data#>'{job, title}' FROM trees WHERE project='people'; people  | "engineer"
+UPDATE trees set data=jsonb_set(data, '{job, title}', '"engineer"') where project='people';
+UPDATE 1
+
+SELECT project, data#>'{job, title}' FROM trees WHERE project='people'; 
+people  | "engineer"
 
 -- new field (meant to update age but typod)
 UPDATE trees set data=jsonb_set(data, '{jage}', '27') where project='people';
