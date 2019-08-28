@@ -12,10 +12,10 @@ else
     log=$(git log $t..HEAD --pretty=oneline)
 fi
 
-echo $t
-
 case "$log" in
-    *#major* ) echo "major bump";;
-    *#patch* ) echo "patch bump";;
-    * ) echo "minor bump";;
+    *#major* ) new=$(semver bump major $t);;
+    *#patch* ) new=$(semver bump patch $t);;
+    * ) new=$(semver bump minor $t);;
 esac
+
+echo $new
