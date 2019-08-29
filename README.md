@@ -7,6 +7,24 @@ Refer to the Medium blog post, [Emulate the Firebase Realtime Database API with 
 ```sh
 # start services
 $ make up
+
+# rebuild images
+$ make rebuild
+
+# build images
+$ make build
+
+# stop containers and destroy them
+$ make down
+
+# stop containers
+$ make stop
+
+# remove images
+$ make remove
+
+# clean up; stop containers remove images and volumes
+$ make clean
 ```
 
 #### Make HTTP requests
