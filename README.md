@@ -105,6 +105,7 @@ A JSFiddle prototype which initially displays the JSON Object returned from an H
 ### Credit
 
 * Websocket work basically taken from [gorilla/websocket/chat example](https://github.com/gorilla/websocket/blob/master/examples/chat)
+* Tagging action by [github-action-tag](https://github.com/anothrNick/github-tag-action)
 
 ### License
 
