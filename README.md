@@ -1,9 +1,11 @@
 JSON Tree rest service. Access JSON structure with HTTP path parameters as keys/indices to the JSON.
 
-Refer to the Medium blog post, [Emulate the Firebase Realtime Database API with Golang, Postgres, and Websockets](https://medium.com/@nick.sjostrom12/emulate-the-firebase-realtime-database-api-with-golang-postgres-and-websockets-6c992159fa9d), which walks through the process of creating this project.
-
 [![Build Status](https://github.com/anothrNick/json-tree-service/workflows/Bump%20version/badge.svg)](https://github.com/anothrNick/json-tree-service/workflows/Bump%20version/badge.svg)
 [![Stable Version](https://img.shields.io/github/v/tag/anothrNick/json-tree-service)](https://img.shields.io/github/v/tag/anothrNick/json-tree-service)
+
+Refer to the Medium blog post, [Emulate the Firebase Realtime Database API with Golang, Postgres, and Websockets](https://medium.com/@nick.sjostrom12/emulate-the-firebase-realtime-database-api-with-golang-postgres-and-websockets-6c992159fa9d), which walks through the process of creating this project.
+
+[![medium](https://miro.medium.com/max/1600/1*k0hMyeDYzSV0_T23BVnZuw.png)](https://miro.medium.com/max/1600/1*k0hMyeDYzSV0_T23BVnZuw.png)
 
 ### Run Locally
 
