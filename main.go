@@ -15,6 +15,7 @@ import (
 func main() {
 
 	// Making change to test workflows
+	// and another one
 
 	// connect to db
 	db, err := database.NewPostgres(
